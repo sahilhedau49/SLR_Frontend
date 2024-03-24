@@ -1,59 +1,63 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import * as tf from "@tensorflow/tfjs";
-import "./wordsmodel48x48.json";
+import testImg from "./more1.jpg";
 
 function App() {
   const [model, setModel] = useState();
 
+  const preprocessImage = (image) => {
+    const resizedImage = tf.image.resizeBilinear(image, [224, 224]);
+    const normalizedImage = resizedImage.div(255.0);
+    const expandedImage = normalizedImage.expandDims(0);
+    return expandedImage;
+  };
+
+  const loadImageAndPreprocess = async (imageUrl) => {
+    const response = await fetch(imageUrl);
+    const blob = await response.blob();
+    const imageBitmap = await createImageBitmap(blob);
+    const imageData = tf.browser.fromPixels(imageBitmap);
+    const preprocessedImage = preprocessImage(imageData);
+    return preprocessedImage;
+  };
+
+  const predictImage = async (imageUrl) => {
+    const preprocessedImage = await loadImageAndPreprocess(imageUrl);
+    const predictions = await model.predict(preprocessedImage);
+    const predictionsData = predictions.dataSync();
+    const predictionsArray = Array.from(predictionsData);
+    console.log(predictionsArray);
+    const predictedClassIndex = predictionsArray.indexOf(
+      Math.max(...predictionsArray)
+    );
+    const classLabels = ["1", "2", "3", "4", "5", "6", "7"];
+    const predictedClass = classLabels[predictedClassIndex];
+    console.log(predictedClass);
+  };
+
   useEffect(() => {
     const loadModel = async () => {
-      const modelloaded = await tf.loadLayersModel("wordsmodel48x48.json");
+      console.log("Model importing...");
+      const modelloaded = await tf.loadLayersModel("model.json");
       setModel(modelloaded);
+      console.log("Model imported!!!");
     };
 
     loadModel();
   }, []);
 
-  const performInference = async () => {
-    // Get input data for inference
-    const imageData = tf.tensor("../inputs/yes1.jpg");
-
-    const inputWidth = 48;
-    const inputHeight = 48;
-
-    // Convert the image data to a TensorFlow.js tensor
-    const inputTensor = tf.browser
-      .fromPixels(imageData)
-      .toFloat()
-      .div(tf.scalar(255));
-
-    // Resize the tensor to 48x48 pixels using bilinear interpolation
-    const resizedTensor = tf.image.resizeBilinear(inputTensor, [
-      inputWidth,
-      inputHeight,
-    ]);
-
-    // Reshape the tensor to match the input shape expected by your model
-    const reshapedTensor = resizedTensor.reshape([
-      1,
-      inputWidth,
-      inputHeight,
-      3,
-    ]);
-
-    // Make predictions
-    const predictions = model.predict(reshapedTensor);
-
-    console.log(predictions);
-    // Process the predictions as needed
-    // ...
-  };
-
   return (
     <div>
       <p> Hello World </p>
-      <button onClick={() => performInference}>Predict</button>
+
+      <button
+        onClick={() => {
+          predictImage(testImg);
+        }}
+      >
+        Predict
+      </button>
     </div>
   );
 }

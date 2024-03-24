@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      console.log("Started...");
+
+      function preprocessImage(image) {
+        // Resize the image to match the input shape expected by the model
+        const resizedImage = tf.image.resizeBilinear(image, [224, 224]);
+
+        // Normalize the pixel values to be in the range [0, 1]
+        const normalizedImage = resizedImage.div(255.0);
+
+        // Add an additional dimension to represent the batch size (1 in this case)
+        const expandedImage = normalizedImage.expandDims(0);
+
+        return expandedImage;
+      }
+
+      // Function to load and preprocess the image
+      async function loadImageAndPreprocess(imageUrl) {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+
+        // Convert Blob to ImageData
+        const imageBitmap = await createImageBitmap(blob);
+        const imageData = tf.browser.fromPixels(imageBitmap);
+
+        // Preprocess the image data
+        const preprocessedImage = preprocessImage(imageData);
+
+        return preprocessedImage;
+      }
+
+      // async function predictImage(imageUrl) {
+      //   const preprocessedImage = await loadImageAndPreprocess(imageUrl);
+      //   const predictions = await model.predict(preprocessedImage);
+      //   return predictions;
+      // }
+
+      async function loadModel() {
+        const model = await tf.loadLayersModel("frontend/public/model.json");
+
+        // Done 1
+
+        const preprocessedImage = await loadImageAndPreprocess("more1.jpg");
+        const predictions = await model.predict(preprocessedImage);
+        // Assuming 'predictions' is the tensor object containing the predictions
+        const predictionsData = predictions.dataSync(); // Get the prediction data as a TypedArray
+
+        // Convert the TypedArray to a regular JavaScript array for easier manipulation
+        const predictionsArray = Array.from(predictionsData);
+        console.log(predictionsArray);
+        // Find the index of the class with the highest probability (argmax)
+        const predictedClassIndex = predictionsArray.indexOf(
+          Math.max(...predictionsArray)
+        );
+
+        // Assuming you have an array of class labels, replace 'classLabels' with your actual class labels array
+        const classLabels = ["1", "2", "3", "4", "5", "6", "7"]; // Replace with your actual class labels array
+
+        // Get the predicted class label using the index
+        const predictedClass = classLabels[predictedClassIndex];
+
+        console.log(predictedClass);
+      }
+      loadModel();
+      console.log("Loaded!!!");
+    </script>
+  </body>
+</html>
