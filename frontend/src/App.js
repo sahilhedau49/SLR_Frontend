@@ -4,7 +4,11 @@ import * as tf from "@tensorflow/tfjs";
 import testImg from "./more1.jpg";
 
 function App() {
+  const [imageUrl, setImageUrl] = useState();
   const [model, setModel] = useState();
+  const [imageSrc, setImageSrc] = useState(null);
+  const [predictedClass, setPredictedClass] = useState("Null");
+  const [accuracy, setAccuracy] = useState(0);
 
   const preprocessImage = (image) => {
     const resizedImage = tf.image.resizeBilinear(image, [224, 224]);
@@ -13,16 +17,37 @@ function App() {
     return expandedImage;
   };
 
-  const loadImageAndPreprocess = async (imageUrl) => {
-    const response = await fetch(imageUrl);
-    const blob = await response.blob();
-    const imageBitmap = await createImageBitmap(blob);
-    const imageData = tf.browser.fromPixels(imageBitmap);
-    const preprocessedImage = preprocessImage(imageData);
-    return preprocessedImage;
+  // const loadImageAndPreprocess = async (imageUrl) => {
+  //   const response = await fetch(imageUrl);
+  //   const blob = await response.blob();
+  //   const imageBitmap = await createImageBitmap(blob);
+  //   const imageData = tf.browser.fromPixels(imageBitmap);
+  //   const preprocessedImage = preprocessImage(imageData);
+  //   return preprocessedImage;
+  // };
+
+  const loadImageAndPreprocess = async (imageFile) => {
+    const reader = new FileReader();
+    const loadImagePromise = new Promise((resolve, reject) => {
+      reader.onload = (e) => {
+        setImageSrc(e.target.result);
+        const img = new Image();
+        img.onload = () => {
+          const imageData = tf.browser.fromPixels(img);
+          const preprocessedImage = preprocessImage(imageData);
+          resolve(preprocessedImage);
+        };
+        img.onerror = (error) => {
+          reject(error);
+        };
+        img.src = e.target.result;
+      };
+    });
+    reader.readAsDataURL(imageFile);
+    return loadImagePromise;
   };
 
-  const predictImage = async (imageUrl) => {
+  const predictImage = async () => {
     const preprocessedImage = await loadImageAndPreprocess(imageUrl);
     const predictions = await model.predict(preprocessedImage);
     const predictionsData = predictions.dataSync();
@@ -31,9 +56,27 @@ function App() {
     const predictedClassIndex = predictionsArray.indexOf(
       Math.max(...predictionsArray)
     );
-    const classLabels = ["1", "2", "3", "4", "5", "6", "7"];
-    const predictedClass = classLabels[predictedClassIndex];
-    console.log(predictedClass);
+    const classLabels = [
+      "Yes",
+      "No",
+      "More",
+      "I Love You",
+      "Home",
+      "Hello",
+      "Bathroom",
+    ];
+    const gotPredictedClass = classLabels[predictedClassIndex];
+    console.log(gotPredictedClass);
+    console.log(predictionsArray[predictedClassIndex]);
+    setPredictedClass(gotPredictedClass);
+    setAccuracy(predictionsArray[predictedClassIndex] * 100);
+  };
+
+  const handleFileChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImageUrl(e.target.files[0]);
+      console.log(e.target.files[0]);
+    }
   };
 
   useEffect(() => {
@@ -49,15 +92,16 @@ function App() {
 
   return (
     <div>
-      <p> Hello World </p>
-
-      <button
-        onClick={() => {
-          predictImage(testImg);
-        }}
-      >
-        Predict
-      </button>
+      <h1>Sign Language Recognition</h1>
+      <input type="file" onChange={handleFileChange} />
+      <button onClick={predictImage}>Predict</button>
+      <div>
+        <img src={imageSrc} />
+      </div>
+      <div>
+        <h2>{predictedClass}</h2>
+        <h2>{accuracy} %</h2>
+      </div>
     </div>
   );
 }
