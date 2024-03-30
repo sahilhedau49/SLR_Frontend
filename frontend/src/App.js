@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
 import * as tf from "@tensorflow/tfjs";
-import testImg from "./more1.jpg";
 
 function App() {
   const [imageUrl, setImageUrl] = useState();
