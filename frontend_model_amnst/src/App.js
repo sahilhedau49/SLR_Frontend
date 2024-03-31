@@ -73,7 +73,9 @@ function App() {
   useEffect(() => {
     const loadModel = async () => {
       console.log("Model importing...");
-      const modelloaded = await tf.loadLayersModel("model.json");
+      const modelloaded = await tf.loadLayersModel(
+        "signlanguagedetectionmodel48x48.json"
+      );
       setModel(modelloaded);
       console.log("Model imported!!!");
     };
