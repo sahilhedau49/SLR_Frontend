@@ -52,7 +52,7 @@ const Home = () => {
           </p>
           <div className="flex gap-6">
             <Link
-              to="https://adidas-clone-sahilhedau49.netlify.app/"
+              to="https://slr-asl.netlify.app/"
               className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out"
             >
               ASL

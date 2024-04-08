@@ -150,7 +150,7 @@ function ModelPage() {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-3xl font-semibold text-center mb-4">
+      <h1 className="text-3xl font-semibold text-center mb-10">
         Sign Language Recognition
       </h1>
       <div className="flex justify-center mb-4">

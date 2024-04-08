@@ -11,7 +11,7 @@ const Navbar = () => {
         <ul className="flex gap-4">
           <li className="ml-4">
             <Link
-              to="https://adidas-clone-sahilhedau49.netlify.app/"
+              to="https://slr-asl.netlify.app/"
               className="text-white hover:text-gray-300"
             >
               ASL
