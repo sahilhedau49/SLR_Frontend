@@ -46,12 +46,24 @@ const Home = () => {
             or developing accessibility solutions, SLR can be an invaluable
             tool.
           </p>
-          <Link
-            to="/model"
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out"
-          >
-            Try Our Model
-          </Link>
+
+          <p className="text-4xl font-semibold text-center mb-8">
+            Try Our Models
+          </p>
+          <div className="flex gap-6">
+            <Link
+              to="https://adidas-clone-sahilhedau49.netlify.app/"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out"
+            >
+              ASL
+            </Link>
+            <Link
+              to="/words"
+              className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg transition duration-300 ease-in-out"
+            >
+              Words
+            </Link>
+          </div>
         </div>
       </div>
     </div>

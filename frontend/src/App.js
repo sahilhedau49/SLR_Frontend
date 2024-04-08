@@ -9,7 +9,7 @@ function App() {
       <Navbar />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/model" element={<ModelPage />} />
+        <Route path="/words" element={<ModelPage />} />
       </Routes>
     </BrowserRouter>
   );
