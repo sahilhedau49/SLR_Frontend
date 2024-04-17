@@ -42,7 +42,7 @@ function ModelPage() {
 
   const predictImage = async () => {
     if (!imageLoaded) {
-      return; // Return if image is not loaded yet
+      return;
     }
     const preprocessedImage = await loadImageAndPreprocess(imageUrl);
     const predictions = await model.predict(preprocessedImage);
